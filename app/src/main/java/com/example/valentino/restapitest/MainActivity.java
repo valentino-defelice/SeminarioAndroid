@@ -3,12 +3,14 @@ package com.example.valentino.restapitest;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -27,25 +29,31 @@ public class MainActivity extends AppCompatActivity {
         final TextView textView = (TextView) findViewById(R.id.textView);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.omdbapi.com/?apikey=2dbc1f17&")
+                .baseUrl("http://www.omdbapi.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         MovieService service = retrofit.create(MovieService.class);
 
-        Call<Movie> movies = service.searchedMovie("titanic");
+        Call<Movie> movies = service.searchedMovie("titanic", "2dbc1f17");
 
         movies.enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
-                Movie pelicula = response.body();
-                textView.setText(pelicula.getTitle());
+                if (response.isSuccessful()) {
+                    Movie pelicula = response.body();
+                    textView.setText(pelicula.getTitle());
+                } else {
+                    Log.e("Movies:", "error" + response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
-
+                Log.e("Movies:", "Error al buscar peli, " + t);
+                textView.setText("ERROR!!");
             }
         });
+
     }
 }
