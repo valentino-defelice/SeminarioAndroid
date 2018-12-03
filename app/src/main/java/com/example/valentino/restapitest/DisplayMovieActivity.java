@@ -7,6 +7,8 @@ import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,6 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DisplayMovieActivity extends AppCompatActivity {
 
+    public static final String ACTOR = "relleno";
+
     ListView listaActores;
     ArrayList<String> ListActores = new ArrayList<>();
 
@@ -48,13 +52,31 @@ public class DisplayMovieActivity extends AppCompatActivity {
          ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ListActores);
          listaActores = findViewById(R.id.ListViewActores);
 
-
+         String Pelicula;
          Intent intent = getIntent();
-         String Pelicula = intent.getStringExtra(MainActivity.PELICULA);
+         if(intent.getStringExtra(MainActivity.PELICULA).equals("relleno")){
+             Pelicula = intent.getStringExtra(ActorDetail.PELICULA);
+         } else {
+             Pelicula = intent.getStringExtra(MainActivity.PELICULA);
+         }
 
         listaActores.setAdapter(arrayAdapter);
         getMovie(Pelicula, textView, imgPoster, arrayAdapter);
 
+        // Disparamos el detalle del actor
+        listaActores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String value = (String) listaActores.getItemAtPosition(position);
+
+                Intent intent1 = new Intent(getApplicationContext(), ActorDetail.class);
+
+                intent1.putExtra(ACTOR, value);
+
+                startActivity(intent1);
+            }
+        });
 
     }
 
